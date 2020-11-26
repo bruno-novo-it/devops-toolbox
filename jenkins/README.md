@@ -1,11 +1,11 @@
 ## How to
-```bash
+
+```sh
 JENKINS_POD=`kubectl get pods | grep "jenkins*" | awk {'print $1'}`
 kubectl exec $JENKINS_POD -- cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-
-```
+```sh
 NOTES:
 1. Get your 'admin' user password by running:
   printf $(kubectl get secret --namespace jenkins jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo

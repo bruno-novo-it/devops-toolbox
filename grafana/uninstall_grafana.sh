@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-GRAFANA_PVC_YAML=grafana_pvc.yaml
 NAMESPACE=istio-system
+PVC_YAML=grafana_pvc.yaml
 
 # Uninstall Grafana Helm Chart
 helm -n $NAMESPACE delete grafana
 
-kubectl delete -f $GRAFANA_PVC_YAML
+kubectl delete -f $PVC_YAML
