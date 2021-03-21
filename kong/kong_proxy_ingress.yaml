@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: kong-proxy-ingress
+  namespace: kong
+spec:
+  rules:
+  - host: "KONG_PROXY_URL"
+    http:
+      paths:
+      - path: /foo
+        backend:
+          serviceName: kong
+          servicePort: 8000

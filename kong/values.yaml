@@ -337,7 +337,7 @@ service:
 
   ## kong proxy HTTP service port
   ##
-  proxyHttpPort: 80
+  proxyHttpPort: 8000
   ## kong proxy HTTPS service port
   ##
   proxyHttpsPort: 443
