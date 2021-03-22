@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source Code
-# https://github.com/kubernetes/ingress-ngin
+# https://github.com/kubernetes/ingress-nginx
 
 # Adding and updating Repositories
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -17,5 +17,8 @@ kubectl create ns ${NAMESPACE} || true
 helm upgrade --install nginx-internal \
             --namespace ${NAMESPACE} \
             --set controller.admissionWebhooks.enabled=false \
+            --set controller.enableCustomResources=true \
+            --set controller.enableTLSPassthrough=true \
+            --set "controller.extraArgs.enable-ssl-passthrough=" \
             -f values_internal.yaml \
             ingress-nginx/ingress-nginx
