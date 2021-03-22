@@ -13,12 +13,10 @@ SERVICE_PORT=3000
 
 ## Add Grafana Repo
 helm repo add grafana https://grafana.github.io/helm-charts
-
-## Update helm repo list
 helm repo update
 
 # Create namespace istio-system if it not exists
-kubectl create ns istio-system || true
+kubectl create ns ${NAMESPACE} || true
 
 # Create Grafana PVC
 kubectl -n $NAMESPACE apply -f $GRAFANA_PVC_YAML
