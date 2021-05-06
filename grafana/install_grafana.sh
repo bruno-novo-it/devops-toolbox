@@ -7,8 +7,8 @@ NAMESPACE=istio-system
 CHART_NAME=grafana
 GRAFANA_PVC_YAML=grafana_pvc.yaml
 GRAFANA_PVC_CLAIM_NAME=grafana-pvc
-IMAGE_REPOSITORY=docker.io/grafana/grafana
-IMAGE_TAG=7.3.4
+IMAGE_REPOSITORY=grafana/grafana
+IMAGE_TAG=7.5.5
 SERVICE_PORT=3000
 
 ## Add Grafana Repo
