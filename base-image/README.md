@@ -1,4 +1,4 @@
-## DevOps Toolbox Base Image, using Phusion Base Image
+# DevOps Toolbox Base Image, using Phusion Base Image
 
 This is the a docker base image that contains:
 
