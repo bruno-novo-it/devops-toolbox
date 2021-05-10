@@ -21,4 +21,4 @@ To build the image, just execute:
 docker build -t devops-toolbox .
 ```
 
-Tha base image is a distribution from Phusion Docker Image --> `https://hub.docker.com/r/phusion/baseimage/`
+Tha base image is a distribution from [Phusion Docker Image](https://hub.docker.com/r/phusion/baseimage/)
