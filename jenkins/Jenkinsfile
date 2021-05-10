@@ -1,0 +1,563 @@
+def label = "worker-${UUID.randomUUID().toString()}"
+
+// String[] full_job_name;
+// full_job_name = job_name.split('/');
+// short_job_name = full_job_name[1].toLowerCase()
+// stack = full_job_name[0].toLowerCase()
+// stack_upper = full_job_name[0].toUpperCase()
+gcp_organization_id="551823388620" //embraerdigital.com
+gcp_billing_account="01E391-93C0F6-6C0EC4"
+region="us-east1"
+BITBUCKET_USER_NAME="Devops Digital"
+BITBUCKET_EMAIL="devops.digital@embraer.com.br"
+env.PROJECT_ID_GLOBAL = "emb-infra"
+env.BITBUCKET_TEAM = "digital_embraer"
+env.TF_ADMIN = "emb-infra"
+env.PROJECT_REPOSITORY=""
+env.BUCKET_NAME = ""
+env.PROJECT_ID=""
+branch_name="master"
+bucket_name=""
+folder_name=""
+
+stage('Choosing Release Version') {
+  try {
+    timeout(time: 1800, unit: 'SECONDS') {
+      def Input = input(id: 'Input', message: 'Enter The Values ​​For The New Project', ok: 'Ok', parameters: [
+        [$class: 'TextParameterDefinition', defaultValue: 'embdigital-nome-do-projeto', description: 'Project ID', name: 'project_id'],
+
+        [$class: 'TextParameterDefinition', defaultValue: 'infra-nome-do-projeto', description: 'DNS Managed Zone Name', name: 'dns_managed_zone_name_infra'],
+        [$class: 'TextParameterDefinition', defaultValue: 'infra.nome-do-projeto.embraerdigital.com.', description: 'DNS Managed Zone DNS Name', name: 'dns_managed_zone_dns_name_infra'],
+        [$class: 'TextParameterDefinition', defaultValue: 'DNS infra.nome-do-projeto.embraerdigital.com', description: 'DNS Managed Zone Description', name: 'dns_managed_zone_description_infra'],
+        [$class: 'TextParameterDefinition', defaultValue: 'infra-nome-do-projeto-internal', description: 'DNS Managed Zone Internal Name', name: 'dns_managed_zone_internal_name_infra'],
+        [$class: 'TextParameterDefinition', defaultValue: 'infra.nome-do-projeto.embraerdigital-internal.com.', description: 'DNS Managed Zone Internal DNS Name', name: 'dns_managed_zone_internal_dns_name_infra'],
+        [$class: 'TextParameterDefinition', defaultValue: 'Internal DNS infra.nome-do-projeto.embraerdigital-internal.com', description: 'DNS Managed Zone Internal Description', name: 'dns_managed_zone_internal_description_infra'],
+
+        [$class: 'TextParameterDefinition', defaultValue: 'dev-nome-do-projeto', description: 'DNS Managed Zone Name', name: 'dns_managed_zone_name_dev'],
+        [$class: 'TextParameterDefinition', defaultValue: 'dev.nome-do-projeto.embraerdigital.com.', description: 'DNS Managed Zone DNS Name', name: 'dns_managed_zone_dns_name_dev'],
+        [$class: 'TextParameterDefinition', defaultValue: 'DNS dev.nome-do-projeto.embraerdigital.com', description: 'DNS Managed Zone Description', name: 'dns_managed_zone_description_dev'],
+        [$class: 'TextParameterDefinition', defaultValue: 'dev-nome-do-projeto-internal', description: 'DNS Managed Zone Internal Name', name: 'dns_managed_zone_internal_name_dev'],
+        [$class: 'TextParameterDefinition', defaultValue: 'dev.nome-do-projeto.embraerdigital-internal.com.', description: 'DNS Managed Zone Internal DNS Name', name: 'dns_managed_zone_internal_dns_name_dev'],
+        [$class: 'TextParameterDefinition', defaultValue: 'Internal DNS dev.nome-do-projeto.embraerdigital-internal.com', description: 'DNS Managed Zone Internal Description', name: 'dns_managed_zone_internal_description_dev'],
+
+        [$class: 'TextParameterDefinition', defaultValue: 'stg-nome-do-projeto', description: 'DNS Managed Zone Name', name: 'dns_managed_zone_name_stg'],
+        [$class: 'TextParameterDefinition', defaultValue: 'stg.nome-do-projeto.embraerdigital.com.', description: 'DNS Managed Zone DNS Name', name: 'dns_managed_zone_dns_name_stg'],
+        [$class: 'TextParameterDefinition', defaultValue: 'DNS stg.nome-do-projeto.embraerdigital.com', description: 'DNS Managed Zone Description', name: 'dns_managed_zone_description_stg'],
+        [$class: 'TextParameterDefinition', defaultValue: 'stg-nome-do-projeto-internal', description: 'DNS Managed Zone Internal Name', name: 'dns_managed_zone_internal_name_stg'],
+        [$class: 'TextParameterDefinition', defaultValue: 'stg.nome-do-projeto.embraerdigital-internal.com.', description: 'DNS Managed Zone Internal DNS Name', name: 'dns_managed_zone_internal_dns_name_stg'],
+        [$class: 'TextParameterDefinition', defaultValue: 'Internal DNS stg.nome-do-projeto.embraerdigital-internal.com', description: 'DNS Managed Zone Internal Description', name: 'dns_managed_zone_internal_description_stg'],
+
+        [$class: 'TextParameterDefinition', defaultValue: 'nome-do-projeto', description: 'DNS Managed Zone Name', name: 'dns_managed_zone_name'],
+        [$class: 'TextParameterDefinition', defaultValue: 'nome-do-projeto.embraerdigital.com.', description: 'DNS Managed Zone DNS Name', name: 'dns_managed_zone_dns_name'],
+        [$class: 'TextParameterDefinition', defaultValue: 'DNS nome-do-projeto.embraerdigital.com', description: 'DNS Managed Zone Description', name: 'dns_managed_zone_description'],
+        [$class: 'TextParameterDefinition', defaultValue: 'nome-do-projeto-internal', description: 'DNS Managed Zone Internal Name', name: 'dns_managed_zone_internal_name'],
+        [$class: 'TextParameterDefinition', defaultValue: 'nome-do-projeto.embraerdigital-internal.com.', description: 'DNS Managed Zone Internal DNS Name', name: 'dns_managed_zone_internal_dns_name'],
+        [$class: 'TextParameterDefinition', defaultValue: 'Internal DNS nome-do-projeto.embraerdigital-internal.com', description: 'DNS Managed Zone Internal Description', name: 'dns_managed_zone_internal_description'],
+
+
+        [$class: 'TextParameterDefinition', defaultValue: '10.0.1.0/26', description: 'Infra Subnet', name: 'infra_subnet'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.8.0.0/20', description: 'Infra Container Subnet Range', name: 'infra_subnet_container_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.12.0.0/20', description: 'Infra Service Subnet Range', name: 'infra_subnet_service_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.0.1.64/26', description: 'Dev Subnet', name: 'dev_subnet'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.8.16.0/20', description: 'Dev Container Subnet Range', name: 'dev_subnet_container_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.12.16.0/20', description: 'Dev Service Subnet Range', name: 'dev_subnet_service_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.0.1.128/26', description: 'Stg Subnet', name: 'stg_subnet'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.8.32.0/20', description: 'Stg Container Subnet Range', name: 'stg_subnet_container_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.12.32.0/20', description: 'Stg Service Subnet Range', name: 'stg_subnet_service_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.0.2.0/24', description: 'Prd Subnet', name: 'prd_subnet'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.8.48.0/20', description: 'Prd Container Subnet Range', name: 'prd_subnet_container_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.12.48.0/20', description: 'Prd Service Subnet Range', name: 'prd_subnet_service_range'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.100.0.112/28', description: 'Master Infra Subnet', name: 'master_infra_ip_subnet'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.100.0.128/28', description: 'Master Dev Subnet', name: 'master_dev_ip_subnet'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.100.0.144/28', description: 'Master Stg Subnet', name: 'master_stg_ip_subnet'],
+        [$class: 'TextParameterDefinition', defaultValue: '10.100.0.160/28', description: 'Master Prd Subnet', name: 'master_prd_ip_subnet'],
+      ])
+
+      if (!(Input['project_id'] ==~ /([a-z]|[0-9]|\-){6,20}/)) {
+        error("Project IDs must start with a lowercase letter and can have lowercase ASCII letters, digits or hyphens. Project IDs must be between 6 and 30 characters")
+      }
+      println "The Selected Project was: " + Input['project_id']
+      bucket_name="embraer-digital-" + Input['project_id']
+      folder_name=Input['project_id']
+
+      env.BUCKET_NAME_INFRA=bucket_name + "-infra"
+      env.BUCKET_NAME_DEV=bucket_name + "-dev"
+      env.BUCKET_NAME_STG=bucket_name + "-stg"
+      env.BUCKET_NAME_PRD=bucket_name + "-prd"
+      env.PROJECT_ID=Input['project_id']
+      env.PROJECT_REPOSITORY=env.PROJECT_ID + "_infra"
+      env.DNS_MANAGED_ZONE_NAME_INFRA=Input['dns_managed_zone_name_infra']
+      env.DNS_MANAGED_ZONE_DESCRIPTION_INFRA=Input['dns_managed_zone_description_infra']
+      env.DNS_MANAGED_ZONE_DNS_NAME_INFRA=Input['dns_managed_zone_dns_name_infra']
+      env.DNS_MANAGED_ZONE_INTERNAL_NAME_INFRA=Input['dns_managed_zone_internal_name_infra']
+      env.DNS_MANAGED_ZONE_INTERNAL_DESCRIPTION_INFRA=Input['dns_managed_zone_internal_description_infra']
+      env.DNS_MANAGED_ZONE_INTERNAL_DNS_NAME_INFRA=Input['dns_managed_zone_internal_dns_name_infra']
+      env.DNS_MANAGED_ZONE_NAME_DEV=Input['dns_managed_zone_name_dev']
+      env.DNS_MANAGED_ZONE_DESCRIPTION_DEV=Input['dns_managed_zone_description_dev']
+      env.DNS_MANAGED_ZONE_DNS_NAME_DEV=Input['dns_managed_zone_dns_name_dev']
+      env.DNS_MANAGED_ZONE_INTERNAL_NAME_DEV=Input['dns_managed_zone_internal_name_dev']
+      env.DNS_MANAGED_ZONE_INTERNAL_DESCRIPTION_DEV=Input['dns_managed_zone_internal_description_dev']
+      env.DNS_MANAGED_ZONE_INTERNAL_DNS_NAME_DEV=Input['dns_managed_zone_internal_dns_name_dev']
+      env.DNS_MANAGED_ZONE_NAME_STG=Input['dns_managed_zone_name_stg']
+      env.DNS_MANAGED_ZONE_DESCRIPTION_STG=Input['dns_managed_zone_description_stg']
+      env.DNS_MANAGED_ZONE_DNS_NAME_STG=Input['dns_managed_zone_dns_name_stg']
+      env.DNS_MANAGED_ZONE_INTERNAL_NAME_STG=Input['dns_managed_zone_internal_name_stg']
+      env.DNS_MANAGED_ZONE_INTERNAL_DESCRIPTION_STG=Input['dns_managed_zone_internal_description_stg']
+      env.DNS_MANAGED_ZONE_INTERNAL_DNS_NAME_STG=Input['dns_managed_zone_internal_dns_name_stg']
+      env.DNS_MANAGED_ZONE_NAME=Input['dns_managed_zone_name']
+      env.DNS_MANAGED_ZONE_DESCRIPTION=Input['dns_managed_zone_description']
+      env.DNS_MANAGED_ZONE_DNS_NAME=Input['dns_managed_zone_dns_name']
+      env.DNS_MANAGED_ZONE_INTERNAL_NAME=Input['dns_managed_zone_internal_name']
+      env.DNS_MANAGED_ZONE_INTERNAL_DESCRIPTION=Input['dns_managed_zone_internal_description']
+      env.DNS_MANAGED_ZONE_INTERNAL_DNS_NAME=Input['dns_managed_zone_internal_dns_name']
+      env.INFRA_SUBNET=Input['infra_subnet']
+      env.INFRA_SUBNET_CONTAINER_RANGE=Input['infra_subnet_container_range']
+      env.INFRA_SUBNET_SERVICE_RANGE=Input['infra_subnet_service_range']
+      env.DEV_SUBNET=Input['dev_subnet']
+      env.DEV_SUBNET_CONTAINER_RANGE=Input['dev_subnet_container_range']
+      env.DEV_SUBNET_SERVICE_RANGE=Input['dev_subnet_service_range']
+      env.STG_SUBNET=Input['stg_subnet']
+      env.STG_SUBNET_CONTAINER_RANGE=Input['stg_subnet_container_range']
+      env.STG_SUBNET_SERVICE_RANGE=Input['stg_subnet_service_range']
+      env.PRD_SUBNET=Input['prd_subnet']
+      env.PRD_SUBNET_CONTAINER_RANGE=Input['prd_subnet_container_range']
+      env.PRD_SUBNET_SERVICE_RANGE=Input['prd_subnet_service_range']
+      env.MASTER_INFRA_IP_SUBNET=Input['master_infra_ip_subnet']
+      env.MASTER_DEV_IP_SUBNET=Input['master_dev_ip_subnet']
+      env.MASTER_STG_IP_SUBNET=Input['master_stg_ip_subnet']
+      env.MASTER_PRD_IP_SUBNET=Input['master_prd_ip_subnet']
+    }
+  }
+  catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+    println "No Project selected or invalid name, Aborting!!"
+    currentBuild.result = 'ABORTED'
+
+    throw e
+    return
+    }
+}
+
+podTemplate(label: label, containers: [
+  containerTemplate(name: 'devops-toolbox', image: "gcr.io/${env.PROJECT_ID_GLOBAL}/devops-toolbox:latest", command: 'cat', ttyEnabled: true,privileged: true, alwaysPullImage: true, resourceRequestMemory: '1024Mi', resourceLimitMemory: '1024Mi')
+],
+volumes: [
+  hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+]) {
+    node(label) {
+        deleteDir()
+        def project_repository
+        project_repository = checkout scm
+        def gitCommit = project_repository.GIT_COMMIT
+        def gitBranch = project_repository.GIT_LOCAL_BRANCH
+
+        stage('Checking project-id availability on GCP') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                gcloud auth activate-service-account --key-file ${GCP_KEY};
+                existing_project=\$(gcloud projects describe ${PROJECT_ID} > /dev/null 2>&1 || echo \$?)
+                if [ -z \$existing_project ]; then
+                  echo "Project ID already exists"
+                  exit 1;
+                fi
+              """
+            }
+          }
+        }
+
+        stage('Creating folder on GCP') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                gcloud auth activate-service-account --key-file ${GCP_KEY};
+                gcloud alpha resource-manager folders create --display-name=${folder_name} --organization=${gcp_organization_id}
+              """
+            }
+          }
+        }
+
+        stage('Creating project on GCP') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                gcloud auth activate-service-account --key-file ${GCP_KEY};
+                folder_result=\$(gcloud alpha resource-manager folders list --organization=${gcp_organization_id} --filter=${folder_name} --format=json)
+                folder_id=\$(echo \$folder_result |  jq '.[].name' | sed -n 's/^.*folders\\/\\(.*.\\)".*\$/\\1/p')
+                gcloud projects create ${PROJECT_ID}-infra --name=${PROJECT_ID}-infra --folder=\$folder_id --format=json
+                gcloud projects create ${PROJECT_ID}-dev --name=${PROJECT_ID}-dev --folder=\$folder_id --format=json
+                gcloud projects create ${PROJECT_ID}-stg --name=${PROJECT_ID}-stg --folder=\$folder_id --format=json
+                gcloud projects create ${PROJECT_ID}-prd --name=${PROJECT_ID}-prd --folder=\$folder_id --format=json
+              """
+            }
+          }
+        }
+
+        stage('Setting up Billing Account on Project') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                gcloud auth activate-service-account --key-file ${GCP_KEY};
+                gcloud beta billing projects link ${PROJECT_ID}-infra --billing-account=${gcp_billing_account}
+                gcloud beta billing projects link ${PROJECT_ID}-dev --billing-account=${gcp_billing_account}
+                gcloud beta billing projects link ${PROJECT_ID}-stg --billing-account=${gcp_billing_account}
+                gcloud beta billing projects link ${PROJECT_ID}-prd --billing-account=${gcp_billing_account}
+              """
+            }
+          }
+        }
+
+        stage('Enabling API`s on Project`s') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                ## Infra APIs
+                gcloud auth activate-service-account --key-file ${GCP_KEY};
+                gcloud config set project ${PROJECT_ID}-infra
+                gcloud services enable cloudresourcemanager.googleapis.com
+                gcloud services enable servicenetworking.googleapis.com
+                gcloud services enable serviceusage.googleapis.com
+                gcloud services enable cloudbilling.googleapis.com
+                gcloud services enable container.googleapis.com
+                gcloud services enable compute.googleapis.com
+                gcloud services enable iam.googleapis.com
+                gcloud services enable dns.googleapis.com
+                gcloud compute shared-vpc enable ${PROJECT_ID}-infra
+
+                ## Dev APIs
+                gcloud config set project ${PROJECT_ID}-dev
+                gcloud services enable cloudresourcemanager.googleapis.com
+                gcloud services enable servicenetworking.googleapis.com
+                gcloud services enable serviceusage.googleapis.com
+                gcloud services enable cloudbilling.googleapis.com
+                gcloud services enable container.googleapis.com
+                gcloud services enable compute.googleapis.com
+                gcloud services enable iam.googleapis.com
+                gcloud services enable dns.googleapis.com
+
+                ## Stg APIs
+                gcloud config set project ${PROJECT_ID}-stg
+                gcloud services enable cloudresourcemanager.googleapis.com
+                gcloud services enable servicenetworking.googleapis.com
+                gcloud services enable serviceusage.googleapis.com
+                gcloud services enable cloudbilling.googleapis.com
+                gcloud services enable container.googleapis.com
+                gcloud services enable compute.googleapis.com
+                gcloud services enable iam.googleapis.com
+                gcloud services enable dns.googleapis.com
+
+                ## Prd APIs
+                gcloud config set project ${PROJECT_ID}-prd
+                gcloud services enable cloudresourcemanager.googleapis.com
+                gcloud services enable servicenetworking.googleapis.com
+                gcloud services enable serviceusage.googleapis.com
+                gcloud services enable cloudbilling.googleapis.com
+                gcloud services enable container.googleapis.com
+                gcloud services enable compute.googleapis.com
+                gcloud services enable iam.googleapis.com
+                gcloud services enable dns.googleapis.com
+                gcloud services enable sql-component.googleapis.com
+                gcloud services enable sqladmin.googleapis.com
+                gcloud services enable storage-api.googleapis.com
+                gcloud services enable logging.googleapis.com
+                gcloud services enable monitoring.googleapis.com
+                gcloud services enable resourceviews.googleapis.com
+              """
+            }
+          }
+        }
+
+        stage('Creating Cloud Storage Bucket') {
+          container('devops-toolbox'){
+              withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+                  sh """
+                      gcloud auth activate-service-account --key-file ${GCP_KEY};
+                      sleep 5
+                      ## Infra Bucket
+                      gcloud config set project ${PROJECT_ID}-infra
+                      gsutil mb -p ${PROJECT_ID}-infra -l ${region} gs://${bucket_name}-infra
+                      gsutil versioning set on gs://${bucket_name}-infra
+                      ## Dev Bucket
+                      gcloud config set project ${PROJECT_ID}-dev
+                      gsutil mb -p ${PROJECT_ID}-dev -l ${region} gs://${bucket_name}-dev
+                      gsutil versioning set on gs://${bucket_name}-dev
+                      ## Staging Bucket
+                      gcloud config set project ${PROJECT_ID}-stg
+                      gsutil mb -p ${PROJECT_ID}-stg -l ${region} gs://${bucket_name}-stg
+                      gsutil versioning set on gs://${bucket_name}-stg
+                      ## Prod Bucket
+                      gcloud config set project ${PROJECT_ID}-prd
+                      gsutil mb -p ${PROJECT_ID}-prd -l ${region} gs://${bucket_name}-prd
+                      gsutil versioning set on gs://${bucket_name}-prd
+                  """
+              }
+          }
+        }
+
+        stage('Creating Repo Bitbucket') {
+          container('devops-toolbox'){
+              withCredentials([usernamePassword(credentialsId: "devops_digital_embraer",
+                              usernameVariable: 'BITBUCKET_USERNAME',
+                              passwordVariable: 'BITBUCKET_PASSWORD')]) {
+                  sh """
+                      python3 /bitbucket_manager.py \
+                      -u ${BITBUCKET_USERNAME} \
+                      -p ${BITBUCKET_PASSWORD} \
+                      --team ${BITBUCKET_TEAM} \
+                      --project ${PROJECT_ID} \
+                      --repository ${PROJECT_REPOSITORY}
+                  """
+              }
+          }
+        }
+
+        stage('Copying Changed Files Infra') {
+          container('devops-toolbox'){
+            env.TF_VAR_project_name_infra=env.PROJECT_ID + "-infra"
+            env.TF_VAR_project_id_infra=env.PROJECT_ID + "-infra"
+            env.TF_VAR_project_id_dev=env.PROJECT_ID + "-dev"
+            env.TF_VAR_project_id_stg=env.PROJECT_ID + "-stg"
+            env.TF_VAR_project_id_prd=env.PROJECT_ID + "-prd"
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              withCredentials([usernamePassword(credentialsId: "devops_digital_embraer",
+                              usernameVariable: 'BITBUCKET_USERNAME',
+                              passwordVariable: 'BITBUCKET_PASSWORD')]) {
+                  sh """
+                      gcloud auth activate-service-account --key-file ${GCP_KEY};
+                      ./copy_files_and_change_variables-infra.sh
+                  """
+                  }
+              }
+          }
+        }
+
+        stage('Copying Changed Files Dev') {
+          container('devops-toolbox'){
+            env.TF_VAR_project_name_dev=env.PROJECT_ID+ "-dev"
+            env.TF_VAR_project_id_dev=env.PROJECT_ID + "-dev"
+            env.TF_VAR_project_id_host=env.PROJECT_ID + "-infra"
+            env.TF_VAR_vpc = "projects/" + env.TF_VAR_project_id_host + "/global/networks/vpc-shared"
+            env.TF_VAR_dev_subnet_name = "projects/" + env.TF_VAR_project_id_host + "/regions/" + region + "/subnetworks/dev-subnet"
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              withCredentials([usernamePassword(credentialsId: "devops_digital_embraer",
+                              usernameVariable: 'BITBUCKET_USERNAME',
+                              passwordVariable: 'BITBUCKET_PASSWORD')]) {
+                  sh """
+                      gcloud auth activate-service-account --key-file ${GCP_KEY};
+                      ./copy_files_and_change_variables-dev.sh
+                  """
+                  }
+              }
+          }
+        }
+
+        stage('Copying Changed Files Staging') {
+          container('devops-toolbox'){
+            env.TF_VAR_project_name_stg=env.PROJECT_ID+ "-stg"
+            env.TF_VAR_project_id_stg=env.PROJECT_ID + "-stg"
+            env.TF_VAR_project_id_host=env.PROJECT_ID + "-infra"
+            env.TF_VAR_vpc = "projects/" + env.TF_VAR_project_id_host + "/global/networks/vpc-shared"
+            env.TF_VAR_stg_subnet_name = "projects/" + env.TF_VAR_project_id_host + "/regions/" + region + "/subnetworks/stg-subnet"
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              withCredentials([usernamePassword(credentialsId: "devops_digital_embraer",
+                              usernameVariable: 'BITBUCKET_USERNAME',
+                              passwordVariable: 'BITBUCKET_PASSWORD')]) {
+                  sh """
+                      gcloud auth activate-service-account --key-file ${GCP_KEY};
+                      ./copy_files_and_change_variables-stg.sh
+                  """
+                  }
+              }
+          }
+        }
+
+        stage('Copying Changed Files Prod') {
+          container('devops-toolbox'){
+            env.TF_VAR_project_name_prd=env.PROJECT_ID+ "-prd"
+            env.TF_VAR_project_id_prd=env.PROJECT_ID + "-prd"
+            env.TF_VAR_project_id_host=env.PROJECT_ID + "-infra"
+            env.TF_VAR_vpc = "projects/" + env.TF_VAR_project_id_host + "/global/networks/vpc-shared"
+            env.TF_VAR_prd_subnet_name = "projects/" + env.TF_VAR_project_id_host + "/regions/" + region + "/subnetworks/prd-subnet"
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              withCredentials([usernamePassword(credentialsId: "devops_digital_embraer",
+                              usernameVariable: 'BITBUCKET_USERNAME',
+                              passwordVariable: 'BITBUCKET_PASSWORD')]) {
+                  sh """
+                      gcloud auth activate-service-account --key-file ${GCP_KEY};
+                      ./copy_files_and_change_variables-prd.sh
+                  """
+                  }
+              }
+          }
+        }
+
+        stage('Commiting New Files') {
+          container('devops-toolbox'){
+              withCredentials([usernamePassword(credentialsId: "devops_digital_embraer",
+                              usernameVariable: 'BITBUCKET_USERNAME',
+                              passwordVariable: 'BITBUCKET_PASSWORD')]) {
+                  sh """
+                      cd ${PROJECT_REPOSITORY}
+                      git config --global user.email "${BITBUCKET_EMAIL}"
+                      git config --global user.name "${BITBUCKET_USER_NAME}"
+                      git status
+                      echo `git add --all && git commit -m "Initial commit"`
+                      git push origin master
+                  """
+              }
+          }
+        }
+
+        stage('Choosing Applying Terraform Infra') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                cd ${PROJECT_REPOSITORY}/tf/infra
+                export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                export GOOGLE_PROJECT=${PROJECT_ID}-infra
+                terraform init
+                terraform plan
+              """
+              try {
+                timeout(time: 1800, unit: 'SECONDS') {
+                  def Choice = input(id: 'Choice', message: 'Do you want to Apply all Terraform Files?', ok: 'Ok', parameters: [
+                  [$class: 'ChoiceParameterDefinition', description: 'Describing Available Choices', name: 'Choice One',choices: ['Yes','No'].join('\n')],
+                ])
+
+                if( "${Choice}" == "Yes"){
+                    sh """
+                        cd ${PROJECT_REPOSITORY}/tf/infra
+                        gcloud auth activate-service-account --key-file ${GCP_KEY};
+                        export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                        export GOOGLE_PROJECT=${PROJECT_ID}-infra
+                        gcloud config set project ${PROJECT_ID}-infra
+                        terraform apply -auto-approve
+                    """
+                } else {
+                    println "The Choice Selected was: ${Choice}"
+                    println "The user Prefer Not apply Infra Terraform Files!!"
+                    }
+                }
+              }
+              catch (error) {
+                throw error
+              }
+            }
+          }
+        }
+
+        stage('Choosing Applying Terraform Dev') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                cd ${PROJECT_REPOSITORY}/tf/dev
+                export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                export GOOGLE_PROJECT=${PROJECT_ID}-dev
+                terraform init
+                terraform plan
+              """
+              try {
+                timeout(time: 1800, unit: 'SECONDS') {
+                  def Choice = input(id: 'Choice', message: 'Do you want to Apply all Terraform Files?', ok: 'Ok', parameters: [
+                  [$class: 'ChoiceParameterDefinition', description: 'Describing Available Choices', name: 'Choice One',choices: ['Yes','No'].join('\n')],
+                ])
+
+                if( "${Choice}" == "Yes"){
+                    sh """
+                        cd ${PROJECT_REPOSITORY}/tf/dev
+                        gcloud auth activate-service-account --key-file ${GCP_KEY};
+                        export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                        export GOOGLE_PROJECT=${PROJECT_ID}-dev
+                        gcloud config set project ${PROJECT_ID}-dev
+                        terraform apply -auto-approve
+                    """
+                } else {
+                    println "The Choice Selected was: ${Choice}"
+                    println "The user Prefer Not apply Development Terraform Files!!"
+                    }
+                }
+              }
+              catch (error) {
+                throw error
+              }
+            }
+          }
+        }
+
+        stage('Choosing Applying Terraform Staging') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                cd ${PROJECT_REPOSITORY}/tf/stg
+                export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                export GOOGLE_PROJECT=${PROJECT_ID}-stg
+                terraform init
+                terraform plan
+              """
+              try {
+                timeout(time: 1800, unit: 'SECONDS') {
+                  def Choice = input(id: 'Choice', message: 'Do you want to Apply all Terraform Files?', ok: 'Ok', parameters: [
+                  [$class: 'ChoiceParameterDefinition', description: 'Describing Available Choices', name: 'Choice One',choices: ['Yes','No'].join('\n')],
+                ])
+
+                if( "${Choice}" == "Yes"){
+                    sh """
+                        cd ${PROJECT_REPOSITORY}/tf/stg
+                        gcloud auth activate-service-account --key-file ${GCP_KEY};
+                        export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                        export GOOGLE_PROJECT=${PROJECT_ID}-stg
+                        gcloud config set project ${PROJECT_ID}-stg
+                        terraform apply -auto-approve
+                    """
+                } else {
+                    println "The Choice Selected was: ${Choice}"
+                    println "The user Prefer Not apply Staging Terraform Files!!"
+                    }
+                }
+              }
+              catch (error) {
+                throw error
+              }
+            }
+          }
+        }
+
+        stage('Choosing Applying Terraform Prod') {
+          container('devops-toolbox'){
+            withCredentials([file(credentialsId: "emb-infra", variable: 'GCP_KEY')]) {
+              sh """
+                cd ${PROJECT_REPOSITORY}/tf/prd
+                export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                export GOOGLE_PROJECT=${PROJECT_ID}-prd
+                terraform init
+                terraform plan
+              """
+              try {
+                timeout(time: 1800, unit: 'SECONDS') {
+                  def Choice = input(id: 'Choice', message: 'Do you want to Apply all Terraform Files?', ok: 'Ok', parameters: [
+                  [$class: 'ChoiceParameterDefinition', description: 'Describing Available Choices', name: 'Choice One',choices: ['Yes','No'].join('\n')],
+                ])
+
+                if( "${Choice}" == "Yes"){
+                    sh """
+                        cd ${PROJECT_REPOSITORY}/tf/prd
+                        gcloud auth activate-service-account --key-file ${GCP_KEY};
+                        export GOOGLE_APPLICATION_CREDENTIALS=${GCP_KEY}
+                        export GOOGLE_PROJECT=${PROJECT_ID}-prd
+                        gcloud config set project ${PROJECT_ID}-prd
+                        terraform apply -auto-approve
+                    """
+                } else {
+                    println "The Choice Selected was: ${Choice}"
+                    println "The user Prefer Not apply Production Terraform Files!!"
+                    }
+                }
+              }
+              catch (error) {
+                throw error
+              }
+            }
+          }
+        }
+
+    }
+}
