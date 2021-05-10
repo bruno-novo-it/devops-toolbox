@@ -1,7 +1,8 @@
 ## DevOps Toolbox Base Image, using Phusion Base Image
 
 This is the a docker base image that contains:
-```
+
+```sh
 Kubectl
 Terraform
 Docker
@@ -15,7 +16,8 @@ And a lot of network and useful tools
 ```
 
 To build the image, just execute:
-```
+
+```sh
 docker build -t devops-toolbox .
 ```
 

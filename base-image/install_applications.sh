@@ -25,7 +25,7 @@ install_clean vim-tiny \
                 s-nail \
                 lsof \
                 procps \
-        
+
 ## Install Powershell
 curl -LO https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
         apt-get install ./packages-microsoft-prod.deb && \
