@@ -1,0 +1,25 @@
+version: '3.2'
+
+services:
+
+    wiremock-server:
+        build: wiremock_base_image/.
+        # image: rodolpheche/wiremock
+        container_name: wiremock-server
+        # volumes:
+        #   - wiremock-mappings:/wiremock/mappings
+        #   - wiremock-files:/wiremock/__files
+        #   - wiremock-certificates:/wiremock/certificates
+        ports:
+          - 8080:8080
+        #   - 443:443
+        #   - 8081:8081
+        #   - 2183:2181
+        #   - 2184:2182
+        networks:
+          wiremock-network:
+            aliases:
+              - wiremock-server
+
+networks:
+    wiremock-network:
