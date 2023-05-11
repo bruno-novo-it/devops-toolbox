@@ -1,0 +1,15 @@
+description: Roles for Velero Backup Tool.
+etag:
+includedPermissions:
+- compute.disks.get
+- compute.disks.create
+- compute.disks.createSnapshot
+- compute.snapshots.get
+- compute.snapshots.create
+- compute.snapshots.useReadOnly
+- compute.snapshots.delete
+- compute.zones.get
+- iam.serviceAccounts.signBlob
+name: organizations/137746208432/roles/VeleroServer
+stage: GA
+title: VeleroServer
