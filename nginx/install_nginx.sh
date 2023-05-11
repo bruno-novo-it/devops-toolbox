@@ -16,9 +16,9 @@ kubectl create ns ${NAMESPACE} || true
 # Installing Helm 3 Nginx Ingress Controller
 helm upgrade --install nginx \
             --namespace ${NAMESPACE} \
-            --set controller.admissionWebhooks.enabled=false \
-            --set controller.enableCustomResources=true \
-            --set controller.enableTLSPassthrough=true \
-            --set "controller.extraArgs.enable-ssl-passthrough=" \
             -f values.yaml \
             ingress-nginx/ingress-nginx
+
+## Possible error's
+## https://stackoverflow.com/questions/61616203/nginx-ingress-controller-failed-calling-webhook
+## Error from server (InternalError): error when creating "yaml/xxx/xxx-ingress.yaml": Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": Post https://ingress-nginx-controller-admission.ingress-nginx.svc:443/extensions/v1beta1/ingresses?timeout=30s: Temporary Redirect
