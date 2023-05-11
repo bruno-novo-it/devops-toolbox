@@ -29,5 +29,13 @@ helm upgrade --install ${CHART_NAME} \
 		grafana/grafana
 
 
+kubectl apply -f grafana_ingress.yaml
+
+echo -e "\nGrafana URL: `kubectl -n ${NAMESPACE} get ingress grafana-ingress -o jsonpath="{.spec.rules[0].host}"`"
+
+echo -e "\nGrafana User: `kubectl -n ${NAMESPACE} get secret grafana -o jsonpath="{.data.admin-user}" | base64 --decode ; echo`"
+
+echo -e "\nGrafana Password: `kubectl -n ${NAMESPACE} get secret grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo`"
+
 # How to get secret
 # kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo

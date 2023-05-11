@@ -40,7 +40,7 @@ gsutil mb -l $REGION gs://$BUCKET/
 
 # Create Roles if necessary
 export ORGANIZATION_ID=137746208432
-export ROLE_NAME=VeleroServer
+export ROLE_NAME=GCPVeleroCustomRole
 
 if [[ `gcloud iam roles list --organization=$ORGANIZATION_ID --filter="title:${ROLE_NAME}" --format=json` == "[]" ]]
 then

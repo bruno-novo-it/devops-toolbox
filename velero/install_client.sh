@@ -6,7 +6,6 @@ VERSION=v1.6.3
 DISTRIBUTION=linux-amd64
 
 
-
 wget https://github.com/vmware-tanzu/velero/releases/download/${VERSION}/velero-${VERSION}-${DISTRIBUTION}.tar.gz
 
 tar -xvf velero-${VERSION}-${DISTRIBUTION}.tar.gz
@@ -17,8 +16,8 @@ sudo chmod a+x /usr/bin/velero
 
 rm -rf velero-${VERSION}-${DISTRIBUTION}.tar.gz velero-${VERSION}-${DISTRIBUTION}
 
-
-
+### MacOS ###
+# brew install velero
 
 #Once velero server is up and running you need the client before you can use it
 #1. wget https://github.com/vmware-tanzu/velero/releases/download/v1.5.2/velero-v1.5.2-darwin-amd64.tar.gz
