@@ -15,6 +15,7 @@
           - apt-transport-https
           - ca-certificates
           - curl
+          - vim
           - gnupg
           - software-properties-common
 
@@ -75,16 +76,60 @@
         - docker.service
         - containerd.service
 
+    ### NAS Directory Configuration
+    - name: "Create directory to NAS Mount"
+      ansible.builtin.file:
+        path: /mnt/zimacube
+        state: directory
+        mode: '0755'
+
+    - name: "Copy credential file to Server"
+      ansible.builtin.copy:
+        src: "{{ inventory_dir }}/{{ item }}"
+        dest: /home/{{ ansible_user }}/{{ item }}
+      loop:
+      - .credentials
+
+    - name: "Install required packages"
+      ansible.builtin.apt:
+        pkg:
+          - cifs-utils
+
+    ## https://dubnik.wordpress.com/2020/03/31/how-to-mount-cifs-ansible/
+    - name: "Mount NAS Directory"
+      mount:
+        state: "mounted"
+        fstype: "cifs"
+        name: /mnt/zimacube/
+        src: "//192.168.0.190/Bruno"
+        opts: "credentials=/home/bruno/.credentials,file_mode=0644,dir_mode=0755,gid=bruno,uid=bruno"
+
+    # - name: Unmount
+    #   mount:
+    #     path: /mnt/zimacube/
+    #     state: unmounted
+
+    ### Copy Compose files and Start them
     - name: "Copy Portainer Docker Compose files"
       ansible.builtin.copy:
         src: "{{ inventory_dir }}/docker/{{ item }}"
         dest: /home/{{ ansible_user }}/{{ item }}
       loop:
+      - media-compose.yaml
       - utils-compose.yaml
 
-    # use files parameter to use multiple docker-compose.yml files
-    - name: "Deploy Portainer Docker Compose stack"
+    - name: "Deploy Media Docker Compose stack"
       community.docker.docker_compose_v2:
+        project_name: media
         project_src: /home/{{ ansible_user }}
+        remove_orphans: true
+        files:
+        - media-compose.yaml
+
+    - name: "Deploy Utils Docker Compose stack"
+      community.docker.docker_compose_v2:
+        project_name: utils
+        project_src: /home/{{ ansible_user }}
+        remove_orphans: true
         files:
         - utils-compose.yaml
