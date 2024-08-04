@@ -80,11 +80,11 @@
         src: "{{ inventory_dir }}/docker/{{ item }}"
         dest: /home/{{ ansible_user }}/{{ item }}
       loop:
-      - portainer-compose.yaml
+      - utils-compose.yaml
 
     # use files parameter to use multiple docker-compose.yml files
     - name: "Deploy Portainer Docker Compose stack"
       community.docker.docker_compose_v2:
         project_src: /home/{{ ansible_user }}
         files:
-        - portainer-compose.yaml
+        - utils-compose.yaml

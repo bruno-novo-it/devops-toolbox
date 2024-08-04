@@ -1,0 +1,44 @@
+version: '3.8'
+
+name: utils
+
+volumes:
+  portainer_data:
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+    ports:
+      - "9000:9000"
+
+  ## https://github.com/containrrr/watchtower
+  ## A process for automating Docker container base image updates.
+  watchtower:
+    image: containrrr/watchtower:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    cap_add:
+      - NET_RAW
+      - SETUID
+
+  ## https://github.com/librespeed/speedtest
+  ## Self-hosted Speed Test for HTML5 and more. Easy setup, examples, configurable, mobile friendly.
+  librespeed:
+    image: lscr.io/linuxserver/librespeed:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /home/bruno/librespeed:/config
+    ports:
+      - "9091:80"
