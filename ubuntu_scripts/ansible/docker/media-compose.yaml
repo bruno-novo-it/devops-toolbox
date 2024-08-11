@@ -1,6 +1,8 @@
 name: media
 
 services:
+  ## Open-source software alternative to µTorrent
+  ## https://github.com/linuxserver/docker-qbittorrent
   qbittorrent:
     image: linuxserver/qbittorrent:latest
     restart: unless-stopped
@@ -15,3 +17,133 @@ services:
     ports:
       - '8080:8080'
       - '62609:62609'
+
+  ## Jackett works as a proxy server: it translates queries from apps (Sonarr, SickRage, CouchPotato, Mylar, etc)
+  ## into tracker-site-specific http queries, parses the html response, then sends results back to the requesting software.
+  ## https://github.com/linuxserver/docker-jackett
+  jackett:
+    image: ghcr.io/linuxserver/jackett:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /home/bruno/jackett/downloads:/downloads
+      - /home/bruno/jackett/config:/config
+    ports:
+      - '9117:9117'
+
+ ## Download Movies
+ ## https://github.com/linuxserver/docker-radarr
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /home/bruno/radarr/appdata/config:/config
+      - /mnt/zimacube/Downloads/torrents:/downloads
+      - /mnt/zimacube/Videos/radarr/movies:/movies
+    ports:
+      - '7878:7878'
+
+  ## Download Series
+  ## https://github.com/linuxserver/docker-sonarr
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /home/bruno/sonarr/appdata/config:/config
+      - /mnt/zimacube/Videos/sonarr:/tv
+      - /mnt/zimacube/Downloads/torrents:/downloads
+    ports:
+      - '8989:8989'
+
+  ## Manage and download subtitles based on your requirements.
+  ## https://github.com/linuxserver/docker-bazarr
+  bazarr:
+    image: ghcr.io/linuxserver/bazarr:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /mnt/zimacube/Videos/radarr:/movies
+      - /mnt/zimacube/Videos/sonarr:/tv
+      - /home/bruno/bazarr/appdata/config:/config
+    ports:
+      - '6767:6767'
+
+  ## Request management and media discovery tool for the Plex ecosystem
+  ## https://github.com/sct/overseerr
+  overseerr:
+    image: sctx/overseerr
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    environment:
+      - TZ=America/Sao_Paulo
+      - PORT=5055
+    volumes:
+      - /home/bruno/overseerr/config:/app/config
+    ports:
+      - '5055:5055'
+
+  ## Principal Index
+  ## https://github.com/hotio/prowlarr
+  prowlarr:
+    image: ghcr.io/hotio/prowlarr:latest
+    restart: unless-stopped
+    depends_on:
+      - flaresolverr
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /home/bruno/prowlarr/config:/config
+    ports:
+      - '9696:9696'
+
+  ## Proxy server to bypass Cloudflare and DDoS-GUARD protection
+  ## https://github.com/FlareSolverr/FlareSolverr
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    volumes:
+      - /home/bruno/flaresolverr/config:/config
+    ports:
+      - '8191:8191'
+
+  ## Media Server
+  ## https://github.com/plexinc/pms-docker
+  plex:
+    image: plexinc/pms-docker:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+      - VA_DRIVER=IHD
+      - PLEX_HW_TRANS_MAX=16
+    volumes:
+      - /home/bruno/plex/config:/config
+      - /home/bruno/plex/data:/data
+      - /home/bruno/plex/transcode:/transcode
+      - /mnt/zimacube/Videos:/media
+    devices:
+      - /dev/dri:/dev/dri
+      - /dev/bus/usb:/dev/bus/usb
+    network_mode: host

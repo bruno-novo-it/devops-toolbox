@@ -18,6 +18,8 @@
           - vim
           - gnupg
           - software-properties-common
+          - net-tools
+          - htop
 
     - name: "Create directory for Docker's GPG key"
       ansible.builtin.file:
