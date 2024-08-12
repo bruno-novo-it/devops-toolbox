@@ -80,9 +80,10 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /mnt/zimacube/Videos/radarr:/movies
-      - /mnt/zimacube/Videos/sonarr:/tv
       - /home/bruno/bazarr/appdata/config:/config
+      - /mnt/zimacube/Videos/sonarr:/tv
+      - /mnt/zimacube/Videos/radarr:/movies
+      - /mnt/zimacube/Downloads/torrents:/downloads
     ports:
       - '6767:6767'
 
