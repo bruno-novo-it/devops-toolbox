@@ -13,7 +13,7 @@ services:
       - PGID=1000
     volumes:
       - /home/bruno/qbittorrent/config:/config
-      - /mnt/zimacube/Downloads/torrents:/downloads
+      - /mnt/zimacube/Downloads:/downloads
     ports:
       - '8080:8080'
       - '62609:62609'
@@ -47,8 +47,8 @@ services:
       - PGID=1000
     volumes:
       - /home/bruno/radarr/appdata/config:/config
-      - /mnt/zimacube/Downloads/torrents:/downloads
-      - /mnt/zimacube/Videos/radarr/movies:/movies
+      - /mnt/zimacube/Downloads:/downloads
+      - /mnt/zimacube/Videos/Filmes:/movies
     ports:
       - '7878:7878'
 
@@ -65,8 +65,8 @@ services:
       - PGID=1000
     volumes:
       - /home/bruno/sonarr/appdata/config:/config
-      - /mnt/zimacube/Videos/sonarr:/tv
-      - /mnt/zimacube/Downloads/torrents:/downloads
+      - /mnt/zimacube/Videos/Series:/tv
+      - /mnt/zimacube/Downloads:/downloads
     ports:
       - '8989:8989'
 
@@ -81,9 +81,9 @@ services:
       - PGID=1000
     volumes:
       - /home/bruno/bazarr/appdata/config:/config
-      - /mnt/zimacube/Videos/sonarr:/tv
-      - /mnt/zimacube/Videos/radarr:/movies
-      - /mnt/zimacube/Downloads/torrents:/downloads
+      - /mnt/zimacube/Videos/Series:/tv
+      - /mnt/zimacube/Videos/Filmes:/movies
+      - /mnt/zimacube/Downloads:/downloads
     ports:
       - '6767:6767'
 
