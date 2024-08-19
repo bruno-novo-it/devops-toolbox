@@ -97,6 +97,24 @@
         pkg:
           - cifs-utils
 
+    - name: Check if resolv.conf file exists
+      stat:
+          path: /etc/resolv.conf
+      register: file_info
+
+    - name: Create /etc/resolv.conf if it exists
+      file:
+        path: /etc/resolv.conf
+        state: touch
+      when: not file_info.stat.exists
+
+    - name: Set DNS nameservers in /etc/resolv.conf
+      blockinfile:
+          path: /etc/resolv.conf
+          block: |
+                nameserver 8.8.8.8
+                nameserver 8.8.4.4
+
     ## https://dubnik.wordpress.com/2020/03/31/how-to-mount-cifs-ansible/
     - name: "Mount NAS Directory"
       mount:
