@@ -20,6 +20,7 @@
           - software-properties-common
           - net-tools
           - htop
+          - gh
 
     - name: "Create directory for Docker's GPG key"
       ansible.builtin.file:
