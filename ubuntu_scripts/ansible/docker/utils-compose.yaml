@@ -4,6 +4,31 @@ volumes:
   portainer_data:
 
 services:
+  # https://github.com/NginxProxyManager/nginx-proxy-manager
+  nginxproxymanager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginxproxymanager
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./nginx/data:/data
+      - ./nginx/letsencrypt:/etc/letsencrypt
+
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - ./nextcloud/appdata:/config
+      - ./nextcloud/data:/data
+    restart: unless-stopped
+
   portainer:
     image: portainer/portainer-ce:latest
     restart: unless-stopped
