@@ -122,7 +122,7 @@
         state: "mounted"
         fstype: "cifs"
         name: /mnt/zimacube/
-        src: "//192.168.0.189/Bruno"
+        src: "//192.168.0.190/Bruno"
         opts: "credentials=/home/bruno/.credentials,file_mode=0644,dir_mode=0755,gid=bruno,uid=bruno"
 
     # - name: Unmount
