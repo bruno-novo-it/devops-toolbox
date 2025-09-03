@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# https://dev.mysql.com/doc/mysql-operator/en/mysql-operator-installation-helm.html
+# https://github.com/mysql/mysql-operator
 
 # Setting variables
 CHART_NAME=mysql-operator
