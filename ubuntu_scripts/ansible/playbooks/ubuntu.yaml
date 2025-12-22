@@ -5,6 +5,8 @@
   vars:
     tailscale_advertise_exit_node: true
     tailscale_up_args: "{{ '--advertise-exit-node' if tailscale_advertise_exit_node else '' }}"
+    enable_nas_mount: false
+    enable_docker_stacks: false
   tasks:
     - name: "Update and upgrade all packages to the latest version"
       ansible.builtin.apt:
@@ -147,6 +149,7 @@
         path: /mnt/zimacube
         state: directory
         mode: '0755'
+      when: enable_nas_mount | bool
 
     - name: "Copy credential file to Server"
       ansible.builtin.copy:
@@ -154,22 +157,27 @@
         dest: /home/{{ ansible_user }}/{{ item }}
       loop:
       - .credentials
+      when: enable_nas_mount | bool
 
     - name: "Install required packages"
       ansible.builtin.apt:
         pkg:
           - cifs-utils
+      when: enable_nas_mount | bool
 
     - name: Check if resolv.conf file exists
       stat:
           path: /etc/resolv.conf
       register: file_info
+      when: enable_nas_mount | bool
 
     - name: Create /etc/resolv.conf if it exists
       file:
         path: /etc/resolv.conf
         state: touch
-      when: not file_info.stat.exists
+      when:
+        - enable_nas_mount | bool
+        - not file_info.stat.exists
 
     - name: Set DNS nameservers in /etc/resolv.conf
       blockinfile:
@@ -177,6 +185,7 @@
           block: |
                 nameserver 8.8.8.8
                 nameserver 8.8.4.4
+      when: enable_nas_mount | bool
 
     ## https://dubnik.wordpress.com/2020/03/31/how-to-mount-cifs-ansible/
     - name: "Mount NAS Directory"
@@ -186,6 +195,7 @@
         name: /mnt/zimacube/
         src: "//192.168.0.189/Bruno"
         opts: "credentials=/home/bruno/.credentials,file_mode=0644,dir_mode=0755,gid=bruno,uid=bruno"
+      when: enable_nas_mount | bool
 
     # - name: Unmount
     #   mount:
@@ -200,6 +210,7 @@
       loop:
       - media-compose.yaml
       - utils-compose.yaml
+      when: enable_docker_stacks | bool
 
     - name: "Deploy Media Docker Compose stack"
       community.docker.docker_compose_v2:
@@ -208,6 +219,7 @@
         remove_orphans: true
         files:
         - media-compose.yaml
+      when: enable_docker_stacks | bool
 
     - name: "Deploy Utils Docker Compose stack"
       community.docker.docker_compose_v2:
@@ -216,3 +228,4 @@
         remove_orphans: true
         files:
         - utils-compose.yaml
+      when: enable_docker_stacks | bool
