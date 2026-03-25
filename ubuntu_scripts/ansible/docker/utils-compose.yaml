@@ -17,17 +17,17 @@ services:
       - ./nginx/data:/data
       - ./nginx/letsencrypt:/etc/letsencrypt
 
-  nextcloud:
-    image: lscr.io/linuxserver/nextcloud:latest
-    container_name: nextcloud
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Sao_Paulo
-    volumes:
-      - ./nextcloud/appdata:/config
-      - ./nextcloud/data:/data
-    restart: unless-stopped
+  # nextcloud:
+  #   image: lscr.io/linuxserver/nextcloud:latest
+  #   container_name: nextcloud
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Sao_Paulo
+  #   volumes:
+  #     - ./nextcloud/appdata:/config
+  #     - ./nextcloud/data:/data
+  #   restart: unless-stopped
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -52,19 +52,37 @@ services:
       - NET_RAW
       - SETUID
 
-  ## https://github.com/librespeed/speedtest
-  ## Self-hosted Speed Test for HTML5 and more. Easy setup, examples, configurable, mobile friendly.
-  librespeed:
-    image: lscr.io/linuxserver/librespeed:latest
+  ## https://github.com/netdata/netdata
+  ## Real-time performance and health monitoring for systems and containers.
+  netdata:
+    image: netdata/netdata:latest
+    container_name: netdata
     restart: unless-stopped
-    environment:
-      - TZ=America/Sao_Paulo
-      - PUID=1000
-      - PGID=1000
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
     volumes:
-      - /home/bruno/librespeed:/config
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/os-release:/host/etc/os-release:ro
     ports:
-      - "9091:80"
+      - "19999:19999"
+
+  # ## https://github.com/librespeed/speedtest
+  # ## Self-hosted Speed Test for HTML5 and more. Easy setup, examples, configurable, mobile friendly.
+  # librespeed:
+  #   image: lscr.io/linuxserver/librespeed:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - TZ=America/Sao_Paulo
+  #     - PUID=1000
+  #     - PGID=1000
+  #   volumes:
+  #     - /home/bruno/librespeed:/config
+  #   ports:
+  #     - "9091:80"
 
 
   # ## https://github.com/nextcloud/all-in-one/blob/main/compose.yaml
