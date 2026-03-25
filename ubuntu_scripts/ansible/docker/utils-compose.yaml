@@ -52,23 +52,23 @@ services:
       - NET_RAW
       - SETUID
 
-  ## https://github.com/netdata/netdata
-  ## Real-time performance and health monitoring for systems and containers.
-  netdata:
-    image: netdata/netdata:latest
-    container_name: netdata
-    restart: unless-stopped
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - apparmor:unconfined
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/os-release:/host/etc/os-release:ro
-    ports:
-      - "19999:19999"
+  # ## https://github.com/netdata/netdata
+  # ## Real-time performance and health monitoring for systems and containers.
+  # netdata:
+  #   image: netdata/netdata:latest
+  #   container_name: netdata
+  #   restart: unless-stopped
+  #   cap_add:
+  #     - SYS_PTRACE
+  #   security_opt:
+  #     - apparmor:unconfined
+  #   volumes:
+  #     - /proc:/host/proc:ro
+  #     - /sys:/host/sys:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /etc/os-release:/host/etc/os-release:ro
+  #   ports:
+  #     - "19999:19999"
 
   # ## https://github.com/librespeed/speedtest
   # ## Self-hosted Speed Test for HTML5 and more. Easy setup, examples, configurable, mobile friendly.
