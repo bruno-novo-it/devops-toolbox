@@ -216,3 +216,19 @@
         remove_orphans: true
         files:
         - utils-compose.yaml
+
+    ## LAN names (<app>.192.168.0.113.nip.io) served by Nginx Proxy Manager
+    - name: "Create Nginx Proxy Manager custom config directory"
+      ansible.builtin.file:
+        path: /home/{{ ansible_user }}/nginx/data/nginx/custom
+        state: directory
+
+    - name: "Copy Nginx Proxy Manager custom config"
+      ansible.builtin.copy:
+        src: "{{ inventory_dir }}/docker/nginx/http.conf"
+        dest: /home/{{ ansible_user }}/nginx/data/nginx/custom/http.conf
+      register: npm_custom_conf
+
+    - name: "Reload Nginx Proxy Manager"
+      ansible.builtin.command: docker exec nginxproxymanager sh -c "nginx -t && nginx -s reload"
+      when: npm_custom_conf.changed
