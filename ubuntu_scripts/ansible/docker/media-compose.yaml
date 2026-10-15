@@ -109,6 +109,10 @@ services:
     restart: unless-stopped
     depends_on:
       - flaresolverr
+    ## ISP DNS (router) blocks some indexers like 1337x and EZTV
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       - TZ=America/Sao_Paulo
       - PUID=1000
@@ -123,6 +127,9 @@ services:
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     restart: unless-stopped
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - /home/bruno/flaresolverr/config:/config
     ports:
