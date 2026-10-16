@@ -1,0 +1,83 @@
+## Uptime monitoring for the home server, status page at http://status.192.168.0.113.nip.io
+## Alerts: add an "alerting:" block (Telegram/Discord) with the token kept on the server, not in this repo.
+storage:
+  type: sqlite
+  path: /data/data.db
+
+ui:
+  title: Home Server Status
+  header: Home Server
+
+endpoints:
+  - name: Plex
+    group: Media
+    url: http://192.168.0.113:32400/identity
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: Seerr
+    group: Media
+    url: http://192.168.0.113:5055/api/v1/status
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: Tautulli
+    group: Media
+    url: http://192.168.0.113:8181/status
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: Bazarr
+    group: Media
+    url: http://192.168.0.113:6767/
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+
+  - name: Sonarr
+    group: Downloads
+    url: http://192.168.0.113:8989/ping
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: Radarr
+    group: Downloads
+    url: http://192.168.0.113:7878/ping
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: Prowlarr
+    group: Downloads
+    url: http://192.168.0.113:9696/ping
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: qBittorrent
+    group: Downloads
+    url: http://192.168.0.113:8080/
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: FlareSolverr
+    group: Downloads
+    url: http://192.168.0.113:8191/
+    interval: 5m
+    conditions: ["[STATUS] == 200"]
+
+  - name: NAS (ZimaCube SMB)
+    group: System
+    url: tcp://192.168.0.189:445
+    interval: 1m
+    conditions: ["[CONNECTED] == true"]
+  - name: Nginx Proxy Manager
+    group: System
+    url: http://192.168.0.113:81/
+    interval: 2m
+    conditions: ["[STATUS] == 200"]
+  - name: Portainer
+    group: System
+    url: http://192.168.0.113:9002/
+    interval: 5m
+    conditions: ["[STATUS] == 200"]
+  - name: Backrest
+    group: System
+    url: http://192.168.0.113:9898/
+    interval: 5m
+    conditions: ["[STATUS] == 200"]
+  - name: Homepage
+    group: System
+    url: http://192.168.0.113:3000/
+    interval: 5m
+    conditions: ["[STATUS] == 200"]

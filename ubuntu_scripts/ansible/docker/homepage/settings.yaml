@@ -1,0 +1,14 @@
+title: Home Server
+theme: dark
+color: slate
+headerStyle: clean
+layout:
+  Media:
+    style: row
+    columns: 4
+  Downloads:
+    style: row
+    columns: 3
+  System:
+    style: row
+    columns: 4

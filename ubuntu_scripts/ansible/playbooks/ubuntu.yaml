@@ -201,6 +201,49 @@
       - media-compose.yaml
       - utils-compose.yaml
 
+    ## App config folders (owned by the user, containers run as UID 1000)
+    - name: "Create app config directories"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      loop:
+      - /home/{{ ansible_user }}/homepage/config
+      - /home/{{ ansible_user }}/gatus/config
+      - /home/{{ ansible_user }}/gatus/data
+      - /home/{{ ansible_user }}/backrest/data
+      - /home/{{ ansible_user }}/backrest/config
+      - /home/{{ ansible_user }}/backrest/cache
+      - /home/{{ ansible_user }}/seerr/config
+      - /home/{{ ansible_user }}/tautulli/config
+      - /home/{{ ansible_user }}/recyclarr/config
+      - /mnt/zimacube/Backups/homeserver
+
+    - name: "Copy Homepage, Gatus and Recyclarr configs"
+      ansible.builtin.copy:
+        src: "{{ inventory_dir }}/docker/{{ item.src }}"
+        dest: /home/{{ ansible_user }}/{{ item.dest }}
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      loop:
+      - { src: homepage/settings.yaml, dest: homepage/config/settings.yaml }
+      - { src: homepage/services.yaml, dest: homepage/config/services.yaml }
+      - { src: homepage/widgets.yaml, dest: homepage/config/widgets.yaml }
+      - { src: homepage/bookmarks.yaml, dest: homepage/config/bookmarks.yaml }
+      - { src: gatus/config.yaml, dest: gatus/config/config.yaml }
+      - { src: recyclarr/recyclarr.yml, dest: recyclarr/config/recyclarr.yml }
+
+    ## Widget API keys (HOMEPAGE_VAR_*) are filled in by hand on the server, never from this repo
+    - name: "Create Homepage secrets file if missing"
+      ansible.builtin.copy:
+        content: ""
+        dest: /home/{{ ansible_user }}/homepage/.env
+        force: false
+        mode: "0600"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
     - name: "Deploy Media Docker Compose stack"
       community.docker.docker_compose_v2:
         project_name: media

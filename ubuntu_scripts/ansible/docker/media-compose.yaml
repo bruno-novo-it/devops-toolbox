@@ -87,20 +87,44 @@ services:
     ports:
       - '6767:6767'
 
-  # ## Request management and media discovery tool for the Plex ecosystem
-  # ## https://github.com/sct/overseerr
-  # overseerr:
-  #   image: sctx/overseerr
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - qbittorrent
-  #   environment:
-  #     - TZ=America/Sao_Paulo
-  #     - PORT=5055
-  #   volumes:
-  #     - /home/bruno/overseerr/config:/app/config
-  #   ports:
-  #     - '5055:5055'
+  ## Request page for series and movies (successor of Overseerr/Jellyseerr)
+  ## https://github.com/seerr-team/seerr
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PORT=5055
+    volumes:
+      - /home/bruno/seerr/config:/app/config
+    ports:
+      - '5055:5055'
+
+  ## Plex statistics and watch history
+  ## https://github.com/Tautulli/Tautulli
+  tautulli:
+    image: ghcr.io/tautulli/tautulli:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /home/bruno/tautulli/config:/config
+    ports:
+      - '8181:8181'
+
+  ## Syncs TRaSH Guides settings into Sonarr/Radarr (runs daily, no UI)
+  ## https://github.com/recyclarr/recyclarr
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:8
+    restart: unless-stopped
+    user: 1000:1000
+    environment:
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /home/bruno/recyclarr/config:/config
 
   ## Principal Index
   ## https://github.com/hotio/prowlarr

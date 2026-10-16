@@ -1,0 +1,16 @@
+## Syncs TRaSH Guides quality size limits into Sonarr and Radarr.
+## API keys come from secrets.yml next to this file on the server (never in this repo).
+## Quality profiles and custom formats are NOT managed here, so the manual ones stay untouched.
+sonarr:
+  sonarr-main:
+    base_url: http://sonarr:8989
+    api_key: !secret sonarr_api_key
+    quality_definition:
+      type: series
+
+radarr:
+  radarr-main:
+    base_url: http://radarr:7878
+    api_key: !secret radarr_api_key
+    quality_definition:
+      type: movie

@@ -1,0 +1,73 @@
+## Widget API keys come from HOMEPAGE_VAR_* in /home/bruno/homepage/.env on the server (never in this repo)
+- Media:
+    - Plex:
+        icon: plex.svg
+        href: http://plex.192.168.0.113.nip.io/web
+        description: Media server
+    - Seerr:
+        icon: overseerr.svg
+        href: http://seerr.192.168.0.113.nip.io
+        description: Request series and movies
+    - Tautulli:
+        icon: tautulli.svg
+        href: http://tautulli.192.168.0.113.nip.io
+        description: Plex statistics
+    - Bazarr:
+        icon: bazarr.svg
+        href: http://bazarr.192.168.0.113.nip.io
+        description: Subtitles (pt-BR, English)
+        widget:
+          type: bazarr
+          url: http://192.168.0.113:6767
+          key: "{{HOMEPAGE_VAR_BAZARR_KEY}}"
+
+- Downloads:
+    - Sonarr:
+        icon: sonarr.svg
+        href: http://sonarr.192.168.0.113.nip.io
+        description: Series
+        widget:
+          type: sonarr
+          url: http://192.168.0.113:8989
+          key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+    - Radarr:
+        icon: radarr.svg
+        href: http://radarr.192.168.0.113.nip.io
+        description: Movies
+        widget:
+          type: radarr
+          url: http://192.168.0.113:7878
+          key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
+    - Prowlarr:
+        icon: prowlarr.svg
+        href: http://prowlarr.192.168.0.113.nip.io
+        description: Indexers
+        widget:
+          type: prowlarr
+          url: http://192.168.0.113:9696
+          key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
+    - qBittorrent:
+        icon: qbittorrent.svg
+        href: http://qbittorrent.192.168.0.113.nip.io
+        description: Torrent client
+
+- System:
+    - Gatus:
+        icon: gatus.svg
+        href: http://status.192.168.0.113.nip.io
+        description: Uptime and alerts
+        widget:
+          type: gatus
+          url: http://192.168.0.113:3001
+    - Backrest:
+        icon: backrest.svg
+        href: http://backrest.192.168.0.113.nip.io
+        description: Backups to the NAS
+    - Portainer:
+        icon: portainer.svg
+        href: http://portainer.192.168.0.113.nip.io
+        description: Docker containers
+    - Nginx Proxy Manager:
+        icon: nginx-proxy-manager.svg
+        href: http://npm.192.168.0.113.nip.io
+        description: Reverse proxy

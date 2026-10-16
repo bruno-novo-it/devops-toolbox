@@ -52,6 +52,56 @@ services:
       - NET_RAW
       - SETUID
 
+  ## Start page with links and live widgets for every app
+  ## https://github.com/gethomepage/homepage
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+      - HOMEPAGE_ALLOWED_HOSTS=home.192.168.0.113.nip.io,192.168.0.113:3000
+    ## API keys for the widgets live only on the server (HOMEPAGE_VAR_* in this file)
+    env_file: /home/bruno/homepage/.env
+    volumes:
+      - /home/bruno/homepage/config:/app/config
+    ports:
+      - '3000:3000'
+
+  ## Uptime monitoring and status page, configured from gatus/config.yaml
+  ## https://github.com/TwiN/gatus
+  gatus:
+    image: twinproduction/gatus:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /home/bruno/gatus/config:/config
+      - /home/bruno/gatus/data:/data
+    ports:
+      - '3001:8080'
+
+  ## Backups (restic with a web UI) of the app configs to the NAS
+  ## https://github.com/garethgeorge/backrest
+  backrest:
+    image: ghcr.io/garethgeorge/backrest:latest
+    restart: unless-stopped
+    hostname: backrest
+    environment:
+      - TZ=America/Sao_Paulo
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+    volumes:
+      - /home/bruno/backrest/data:/data
+      - /home/bruno/backrest/config:/config
+      - /home/bruno/backrest/cache:/cache
+      - /home/bruno:/source/home:ro
+      - /mnt/zimacube/Backups/homeserver:/repos
+    ports:
+      - '9898:9898'
+
   # ## https://github.com/netdata/netdata
   # ## Real-time performance and health monitoring for systems and containers.
   # netdata:
