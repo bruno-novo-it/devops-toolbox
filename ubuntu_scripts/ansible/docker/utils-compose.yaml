@@ -98,7 +98,8 @@ services:
       - /home/bruno/backrest/config:/config
       - /home/bruno/backrest/cache:/cache
       - /home/bruno:/source/home:ro
-      - /mnt/zimacube/Backups/homeserver:/repos
+      ## The Backrest repo URI is "repo", which resolves to /repo inside the container
+      - /mnt/zimacube/Backups/homeserver:/repo
     ports:
       - '9898:9898'
 
