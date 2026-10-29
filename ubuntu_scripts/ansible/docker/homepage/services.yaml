@@ -83,3 +83,8 @@
         icon: nginx-proxy-manager.svg
         href: http://npm.192.168.0.113.nip.io
         description: Reverse proxy
+    - ZimaCube:
+        icon: mdi-nas
+        href: http://192.168.0.189/
+        description: NAS (ZimaOS)
+        siteMonitor: http://192.168.0.189/
