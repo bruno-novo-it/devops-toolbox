@@ -20,6 +20,10 @@
           type: tautulli
           url: http://192.168.0.113:8181
           key: "{{HOMEPAGE_VAR_TAUTULLI_KEY}}"
+    - Audiobookshelf:
+        icon: audiobookshelf.svg
+        href: http://audiobooks.192.168.0.113.nip.io
+        description: Audiobooks and ebooks
     - Bazarr:
         icon: bazarr.svg
         href: http://bazarr.192.168.0.113.nip.io

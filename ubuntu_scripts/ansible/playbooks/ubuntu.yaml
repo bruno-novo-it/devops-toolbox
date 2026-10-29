@@ -218,7 +218,10 @@
       - /home/{{ ansible_user }}/seerr/config
       - /home/{{ ansible_user }}/tautulli/config
       - /home/{{ ansible_user }}/recyclarr/config
+      - /home/{{ ansible_user }}/audiobookshelf/config
+      - /home/{{ ansible_user }}/audiobookshelf/metadata
       - /mnt/zimacube/Backups/homeserver
+      - /mnt/zimacube/Audiobooks
 
     - name: "Copy Homepage, Gatus and Recyclarr configs"
       ansible.builtin.copy:

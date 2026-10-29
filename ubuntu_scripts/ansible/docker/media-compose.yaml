@@ -126,6 +126,21 @@ services:
     volumes:
       - /home/bruno/recyclarr/config:/config
 
+  ## Audiobooks and ebooks with phone apps and progress sync
+  ## https://github.com/advplyr/audiobookshelf
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /home/bruno/audiobookshelf/config:/config
+      - /home/bruno/audiobookshelf/metadata:/metadata
+      - /mnt/zimacube/Audiobooks:/audiobooks
+      - /mnt/zimacube/Livros:/ebooks:ro
+    ports:
+      - '13378:80'
+
   ## Principal Index
   ## https://github.com/hotio/prowlarr
   prowlarr:
